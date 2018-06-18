@@ -1,0 +1,102 @@
+#!/usr/bin/env node
+
+const utils = require('../utils')
+const zapier = require('../zapier')
+const request = require('request')
+const Airtable = require('airtable')
+const firebase = require('firebase-admin')
+const firebaseServiceAccount = require("../firebaseServiceAccountKey.json")
+const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID)
+
+const dayOfWeek = new Date().getDay();
+const isWeekend = (dayOfWeek == 6) || (dayOfWeek == 0); // 6 = Saturday, 0 = Sunday
+
+if (isWeekend) {
+  return false // do not run this on the weekends
+}
+
+
+firebase.initializeApp({
+  credential: firebase.credential.cert(firebaseServiceAccount),
+  databaseURL: `https://${process.env.FIREBASE_PROJECT_NAME}.firebaseio.com`
+});
+
+const db = firebase.database()
+const ref = db.ref('/')
+
+
+function getDatabaseSnapshot() {
+  //TODO: we should find out what it means to be onboarded and only pull
+  // data from Firebase for new hires that are not yet onboarded
+  return new Promise(function(resolve, reject) {
+    
+    ref.once('value', (snapshot) => {
+      return resolve(snapshot.val())
+    })
+    
+  });
+}
+
+let dbSnapshot = getDatabaseSnapshot()
+dbSnapshot.then(snapshot => {
+
+  base(process.env.AIRTABLE_TABLE_NAME).select({
+      view: process.env.AIRTABLE_VIEW_NAME,
+      sort: [{field: process.env.AIRTABLE_SORT_FIELD_NAME, direction: "desc"}]
+  }).eachPage(function page(newHires, fetchNextPage) {
+      // This function (`page`) will get called for each page of records.    
+      newHires.forEach(function(newHire, index) {
+        console.log(newHire.id)
+        let id            = newHire.id
+        let name          = newHire.get('Name')
+        let startDate     = newHire.get('Start Date')
+        let hiringManagerEmail     = newHire.get('Hiring Manager Email')
+        let hrCoordinatorEmail     = newHire.get('HR Coordinator Email')
+        let hrBusinessPartnerEmail = newHire.get('HR Business Partner Email')
+        let recruiterEmail         = newHire.get('Recruiter Email')
+        
+        if (!snapshot) {
+          // first time case
+          snapshot = {}
+        } else if(!snapshot || !snapshot[id]) {
+          // save this newhire to our snapshot if not present
+        } else if (snapshot[id].startDate != startDate) {
+          // the startDate in airtable is different than what we had
+          console.log(snapshot[id].startDate + " is not the same as " + startDate)
+          zapier.sendStartDateChangedWebhook({
+            newHire: {
+              originalStartDate: snapshot[id].startDate,
+              newStartDate: startDate,
+              name: name,
+              hiringManagerEmail: hiringManagerEmail,
+              hrCoordinatorEmail: hrCoordinatorEmail,
+              hrBusinessPartnerEmail: hrBusinessPartnerEmail,
+              recruiterEmail: recruiterEmail
+            }
+          })
+        } else {
+          // everything is okay
+          console.log(snapshot[id].startDate + " is the same as " + startDate)
+        }
+        
+        snapshot[id] = {
+          startDate: startDate
+        }
+      })
+      
+      // To fetch the next page of records, call `fetchNextPage`.
+      // If there are more records, `page` will get called again.
+      // If there are no more records, `done` will get called.
+      fetchNextPage();
+
+  }, function done(err) {
+      if (err) { console.error(err); return; }
+      
+      // update firebase with newest data
+      ref.set(snapshot)
+      
+      // return to end the process
+      return
+  });
+  
+})

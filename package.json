@@ -1,0 +1,16 @@
+{
+  "name": "HR Automation",
+  "version": "1.0.0",
+  "description": "cron jobs for the hr onboarding flow",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "airtable": "^0.5.2",
+    "firebase-admin": "^5.12.1",
+    "moment": "^2.22.0"
+  }
+}

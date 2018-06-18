@@ -1,0 +1,116 @@
+#!/usr/bin/env node
+//This function is currently not in use
+
+const utils = require('../utils')
+const request = require('request')
+const Airtable = require('airtable')
+const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID)
+
+var dayOfWeek = new Date().getDay();
+var isWeekend = (dayOfWeek == 6) || (dayOfWeek == 0); // 6 = Saturday, 0 = Sunday
+
+if (isWeekend) {
+  return false // do not run this on the weekends
+}
+
+let slackAttachments = []
+
+base(process.env.AIRTABLE_TABLE_NAME).select({
+    view: process.env.AIRTABLE_VIEW_NAME,
+    sort: [{field: process.env.AIRTABLE_SORT_FIELD_NAME, direction: "desc"}]
+}).eachPage(function page(newHires, fetchNextPage) {
+    // This function (`page`) will get called for each page of records.
+
+    newHires.forEach(function(newHire, index) {
+      
+      let name          = newHire.get('Name')
+      let startDate     = newHire.get('Start Date')
+      let itDone        = (newHire.get('IT Equipment Procured')) ? ":white_check_mark: Done" : ""
+      let workplaceDone = (newHire.get('Workplace Seating Setup')) ? ":white_check_mark: Done" : ""
+      let legalDone     = (newHire.get('Legal Approval')) ? ":white_check_mark: Done" : ""
+      let financeDone   = (newHire.get('Finance Approval')) ? ":white_check_mark: Done" : ""
+    
+      let color = utils.setColor(newHire)
+      
+      Promise.all([color]).then(values => {
+        let color = values[0]
+        
+        let slackAttachment = {
+          color: color,
+          fields: [
+            {
+              title: 'Name',
+              value: name,
+              short: true
+            },
+            {
+              title: 'Start Date',
+              value: startDate,
+              short: true
+            },
+            {
+              title: 'IT Equipment Procured',
+              value: itDone,
+              short: true
+            },
+            {
+              title: 'Workplace Seating Setup',
+              value: workplaceDone,
+              short: true
+            },
+            {
+              title: 'Legal Approval',
+              value: legalDone,
+              short: true
+            },
+            {
+              title: 'Finance Approval',
+              value: financeDone,
+              short: true
+            }
+          ]
+        }
+        
+        slackAttachments.push(slackAttachment)
+        
+        // if this is the last task, send to slack
+        if (index + 1 == newHires.length) {
+          slackAttachments.sort(compare)
+          console.log(slackAttachments)
+          let postData = {
+            text: `:wave: Hi everyone! Here is the daily new hire onboarding report:`,
+            attachments: slackAttachments
+          }
+          let options = {
+            method: 'post',
+            body: postData,
+            json: true,
+            url: process.env.SLACK_URL
+          }
+          
+          request(options, function(err, response, body) {
+            if (err) { console.log(err); return; }
+            console.log(body)
+          })
+        }
+      })      
+    })
+
+    // To fetch the next page of records, call `fetchNextPage`.
+    // If there are more records, `page` will get called again.
+    // If there are no more records, `done` will get called.
+    // each page is 100 records... we should never call this
+    fetchNextPage();
+
+}, function done(err) {
+    if (err) { console.error(err); return; }
+});
+
+
+function compare(a, b) {
+  if (a.fields[1].value < b.fields[1].value)
+    return -1;
+  if (a.fields[1].value > b.fields[1].value)
+    return 1;
+  return 0;
+}
