@@ -5,7 +5,7 @@ const zapier = require('../zapier')
 const request = require('request')
 const Airtable = require('airtable')
 const firebase = require('firebase-admin')
-const firebaseServiceAccount = require("../firebaseServiceAccountKey.json")
+const firebaseServiceAccount = JSON.parse(new Buffer(process.env.FIREBASE_SERVICE_ACCOUNT_KEY, 'base64').toString('ascii'))
 const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID)
 
 const dayOfWeek = new Date().getDay();
