@@ -13,12 +13,22 @@ if (isWeekend) {
   return false // do not run this on the weekends
 }
 
+// assume we wont find any new hires today so do not send email
+// the logic will flip this to true if a new hire is found
+let sendEmail = false
+
 let newHireRows = ``
 
 base(process.env.AIRTABLE_TABLE_NAME).select({
     view: "New Hires Starting Today"
 }).eachPage(function page(newHires, fetchNextPage) {
-    // This function (`page`) will get called for each page of records.    
+    // This function (`page`) will get called for each page of records.  
+    
+    // if we actually find New Hires in the view, send the email
+    if (newHires.length > 0) {
+      sendEmail = true
+    } 
+     
     newHires.forEach(function(newHire, index) {
       let name           = newHire.get('Name')
       let officeLocation = newHire.get('Office Location')
@@ -37,6 +47,9 @@ base(process.env.AIRTABLE_TABLE_NAME).select({
 
 }, function done(err) {
     if (err) { console.error(err); return; }
+    
+    // only send this email if we found new hires
+    if (!sendEmail) { console.log('No new hires today!'); return; }
     
     let emailBody = `
       <table>
