@@ -1,0 +1,57 @@
+#!/usr/bin/env node
+
+const utils = require('../utils')
+const zapier = require('../zapier')
+const request = require('request')
+const Airtable = require('airtable')
+const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID)
+
+const dayOfWeek = new Date().getDay();
+const isWeekend = (dayOfWeek == 6) || (dayOfWeek == 0); // 6 = Saturday, 0 = Sunday
+
+if (isWeekend) {
+  return false // do not run this on the weekends
+}
+
+let newHireRows = ``
+
+base(process.env.AIRTABLE_TABLE_NAME).select({
+    view: "New Hires Starting Today"
+}).eachPage(function page(newHires, fetchNextPage) {
+    // This function (`page`) will get called for each page of records.    
+    newHires.forEach(function(newHire, index) {
+      let name           = newHire.get('Name')
+      let officeLocation = newHire.get('Office Location')
+      
+      newHireRows += `<tr>
+                        <td>${name}</td>
+                        <td>${officeLocation}</td>
+                      </tr>`
+      
+    })
+    
+    // To fetch the next page of records, call `fetchNextPage`.
+    // If there are more records, `page` will get called again.
+    // If there are no more records, `done` will get called.
+    fetchNextPage();
+
+}, function done(err) {
+    if (err) { console.error(err); return; }
+    
+    let emailBody = `
+      <table>
+        <tr>
+          <th>New Hire</th>
+          <th>Office Location</th>
+        </tr>
+        ${newHireRows}
+      </table>
+    `
+    
+    zapier.sendNewHiresStartingTodayWebhook({
+      emailBody: emailBody
+    })
+    
+    // return to end the process
+    return
+});

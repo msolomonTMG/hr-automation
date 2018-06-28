@@ -41,7 +41,7 @@ let dbSnapshot = getDatabaseSnapshot()
 dbSnapshot.then(snapshot => {
 
   base(process.env.AIRTABLE_TABLE_NAME).select({
-      view: process.env.AIRTABLE_VIEW_NAME,
+      view: "New Hires to Onboard",
       sort: [{field: process.env.AIRTABLE_SORT_FIELD_NAME, direction: "desc"}]
   }).eachPage(function page(newHires, fetchNextPage) {
       // This function (`page`) will get called for each page of records.    
