@@ -12,5 +12,10 @@
     "airtable": "^0.5.2",
     "firebase-admin": "^5.12.1",
     "moment": "^2.22.2"
-  }
+  },
+  "engines": {
+    "node": "8.2.0",
+    "nvm": "6.1.0"
+  },
+  "engineStrict": true
 }
