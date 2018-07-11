@@ -18,6 +18,7 @@
   "homepage": "https://github.com/msolomonTMG/hr-automation#readme",
   "dependencies": {
     "airtable": "^0.5.6",
+    "express": "^4.16.3",
     "firebase-admin": "^5.12.1",
     "request": "^2.87.0"
   }
