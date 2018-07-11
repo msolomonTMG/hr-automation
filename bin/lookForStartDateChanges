@@ -3,7 +3,7 @@
 const utils = require('../utils')
 const zapier = require('../zapier')
 const request = require('request')
-const Airtable = require('airtable')
+const Airtable = require('Airtable')
 const firebase = require('firebase-admin')
 const firebaseServiceAccount = JSON.parse(new Buffer(process.env.FIREBASE_SERVICE_ACCOUNT_KEY, 'base64').toString('ascii'))
 const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.env.AIRTABLE_BASE_ID)
