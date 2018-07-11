@@ -1,23 +1,24 @@
 {
-  "name": "HR Automation",
+  "name": "hr-airtable-slack",
   "version": "1.0.0",
-  "description": "cron jobs for the hr onboarding flow",
+  "description": "",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/msolomonTMG/hr-automation.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/msolomonTMG/hr-automation/issues"
+  },
+  "homepage": "https://github.com/msolomonTMG/hr-automation#readme",
   "dependencies": {
-    "airtable": "0.5.2",
-    "express": "4.16.3",
-    "firebase-admin": "5.12.1",
-    "moment": "2.22.2"
-  },
-  "engines": {
-    "node": "8.2.0",
-    "npm": "6.1.0",
-    "nvm": "0.32.1"
-  },
-  "engineStrict": true
+    "airtable": "^0.5.6",
+    "firebase-admin": "^5.12.1",
+    "request": "^2.87.0"
+  }
 }
