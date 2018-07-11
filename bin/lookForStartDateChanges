@@ -2,7 +2,6 @@
 
 const utils = require('../utils')
 const zapier = require('../zapier')
-const request = require('request')
 const Airtable = require('airtable')
 const firebase = require('firebase-admin')
 const firebaseServiceAccount = JSON.parse(new Buffer(process.env.FIREBASE_SERVICE_ACCOUNT_KEY, 'base64').toString('ascii'))
