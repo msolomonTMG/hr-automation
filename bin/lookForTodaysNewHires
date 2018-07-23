@@ -29,12 +29,20 @@ base(process.env.AIRTABLE_TABLE_NAME).select({
     } 
      
     newHires.forEach(function(newHire, index) {
-      let name           = newHire.get('Name')
-      let officeLocation = newHire.get('Office Location')
+      let name              = newHire.get('Name')
+      let officeLocation    = newHire.get('Office Location')
+      let recruiter         = newHire.get('Recruiter Name')
+      let hrCoordinator     = newHire.get('HR Coordinator Name')
+      let hrBusinessPartner = newHire.get('HR Business Partner Name')
+      let hiringManager     = newHire.get('Hiring Manager Email')
       
       newHireRows += `<tr>
                         <td>${name}</td>
                         <td>${officeLocation}</td>
+                        <td>${recruiter}</td>
+                        <td>${hrCoordinator}</td>
+                        <td>${hrBusinessPartner}</td>
+                        <td>${hiringManager}</td>
                       </tr>`
       
     })
@@ -55,6 +63,10 @@ base(process.env.AIRTABLE_TABLE_NAME).select({
         <tr>
           <th>New Hire</th>
           <th>Office Location</th>
+          <th>Recruiter</th>
+          <th>HR Coordinator</th>
+          <th>HR Business Partner</th>
+          <th>Hiring Manager</th>
         </tr>
         ${newHireRows}
       </table>
