@@ -8,8 +8,8 @@ const base = new Airtable({apiKey: process.env.AIRTABLE_API_KEY}).base(process.e
 const dayOfWeek = new Date().getDay();
 const isWeekend = (dayOfWeek == 6) || (dayOfWeek == 0); // 6 = Saturday, 0 = Sunday
 
-if (isWeekend) {
-  return false // do not run this on the weekends
+if (dayOfWeek != 5) {
+  return false // only run on Fridays
 }
 
 // assume we wont find any new hires today so do not send email
