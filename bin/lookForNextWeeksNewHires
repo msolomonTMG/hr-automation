@@ -19,7 +19,7 @@ let sendEmail = false
 let newHireRows = ``
 
 base(process.env.AIRTABLE_TABLE_NAME).select({
-    view: "New Hires Starting Today"
+    view: "New Hires Starting Next Week"
 }).eachPage(function page(newHires, fetchNextPage) {
     // This function (`page`) will get called for each page of records.  
     
@@ -29,19 +29,19 @@ base(process.env.AIRTABLE_TABLE_NAME).select({
     } 
      
     newHires.forEach(function(newHire, index) {
-      let name              = newHire.get('Name')
-      let officeLocation    = newHire.get('Office Location')
-      let recruiter         = newHire.get('Recruiter Name')
-      let hrCoordinator     = newHire.get('HR Coordinator Name')
-      let hrBusinessPartner = newHire.get('HR Business Partner Name')
-      let hiringManager     = newHire.get('Hiring Manager Email')
+      let name                = newHire.get('Name')
+      let officeLocation      = newHire.get('Office Location')
+      let entityAndDept       = newHire.get('Entity and Department')
+      let hrCoordinator       = newHire.get('HR Coordinator Name')
+      let workplaceSpecialist = newHire.get('Workplace Specialist Name')
+      let hiringManager       = newHire.get('Hiring Manager Email')
       
       newHireRows += `<tr>
                         <td>${name}</td>
                         <td>${officeLocation}</td>
-                        <td>${recruiter}</td>
+                        <td>${workplaceSpecialist}</td>
                         <td>${hrCoordinator}</td>
-                        <td>${hrBusinessPartner}</td>
+                        <td>${entityAndDept}</td>
                         <td>${hiringManager}</td>
                       </tr>`
       
@@ -63,9 +63,9 @@ base(process.env.AIRTABLE_TABLE_NAME).select({
         <tr>
           <th>New Hire</th>
           <th>Office Location</th>
-          <th>Recruiter</th>
+          <th>Ops</th>
           <th>HR Coordinator</th>
-          <th>HR Business Partner</th>
+          <th>Entity and Department</th>
           <th>Hiring Manager</th>
         </tr>
         ${newHireRows}
