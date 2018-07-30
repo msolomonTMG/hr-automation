@@ -26,7 +26,7 @@ module.exports = {
         method: 'post',
         body: data,
         json: true,
-        url: process.env.ZAPIER_TODAYS_NEW_HIRES_ENDPOINT
+        url: process.env.ZAPIER_NEXT_WEEKS_NEW_HIRES_ENDPOINT
       }
       
       request(options, function(err, response, body) {
