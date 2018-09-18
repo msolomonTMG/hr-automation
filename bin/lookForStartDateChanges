@@ -53,6 +53,7 @@ dbSnapshot.then(snapshot => {
         let hrCoordinatorEmail     = newHire.get('HR Coordinator Email')
         let hrBusinessPartnerEmail = newHire.get('HR Business Partner Email')
         let recruiterEmail         = newHire.get('Recruiter Email')
+        let entityLead             = newHire.get('Entity Lead')
         
         if (!snapshot) {
           // first time case
@@ -70,7 +71,8 @@ dbSnapshot.then(snapshot => {
               hiringManagerEmail: hiringManagerEmail,
               hrCoordinatorEmail: hrCoordinatorEmail,
               hrBusinessPartnerEmail: hrBusinessPartnerEmail,
-              recruiterEmail: recruiterEmail
+              recruiterEmail: recruiterEmail,
+              entityLead: entityLead
             }
           })
         } else {
