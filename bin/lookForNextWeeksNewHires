@@ -36,9 +36,11 @@ base(process.env.AIRTABLE_TABLE_NAME).select({
       let workplaceSpecialist = newHire.get('Workplace Specialist Name')
       let hiringManager       = newHire.get('Hiring Manager Email')
       let startDate           = newHire.get('Start Date')
+      let type                = newHire.get('Type')
       
       newHireRows += `<tr>
                         <td>${name}</td>
+                        <td>${type}</td>
                         <td>${startDate}</td>
                         <td>${officeLocation}</td>
                         <td>${workplaceSpecialist}</td>
@@ -64,6 +66,7 @@ base(process.env.AIRTABLE_TABLE_NAME).select({
       <table>
         <tr>
           <th>New Hire</th>
+          <th>Type</th>
           <th>Start Date</th>
           <th>Office Location</th>
           <th>Ops</th>
