@@ -38,7 +38,7 @@ base(process.env.AIRTABLE_TABLE_NAME).select({
       let startDate           = newHire.get('Start Date')
       let type                = newHire.get('Type')
       let newHireEmail        = newHire.get('New Hire Email')
-      let newHirePersonalEmail= newHire.get('New Hire Personal Email')
+      let newHirePersonalEmail= newHire.get('New Hire Personal Email Address')
       let jobTitle            = newHire.get('Job Title')
       
       newHireRows += `<tr>
